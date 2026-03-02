@@ -1,0 +1,6 @@
+FastAPI
+pydantic
+uvicorn
+langchain
+langchain_ollama
+langchain_classic

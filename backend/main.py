@@ -1,16 +1,30 @@
-# This is a sample Python script.
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from agents.ConversionAgent import ConversionAgent
+from models.InputModel import InputModel
+from models.OutputModel import OutputModel
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],  # React dev server
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.post("/", response_model=OutputModel)
+async def converter(input: InputModel) -> OutputModel:
+    prompt: str = input.request
+
+    agent = ConversionAgent()
+
+    response = agent.run(prompt)
+
+    output_model = OutputModel(response=response)
+    return output_model
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
