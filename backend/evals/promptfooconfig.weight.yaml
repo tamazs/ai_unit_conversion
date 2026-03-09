@@ -1,0 +1,36 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+description: "Weight conversion evaluations"
+
+prompts:
+  - "Convert {{value}} kilograms to pounds. Reply with only the number."
+  - "What is {{value}} kg in pounds? Give only the numeric answer."
+
+providers:
+  - "ollama:chat:llama3.2"
+  - "ollama:chat:mistral"
+
+tests:
+  - vars:
+      value: 1
+    assert:
+      - type: icontains
+        value: "2.2"
+      - type: llm-rubric
+        value: "The response should be close to 2.204. Just a number."
+        provider: "ollama:chat:mistral"
+
+  - vars:
+      value: 100
+    assert:
+      - type: icontains
+        value: "220"
+      - type: llm-rubric
+        value: "The response should be close to 220.46. No explanation."
+        provider: "ollama:chat:mistral"
+
+  - vars:
+      value: 75
+    assert:
+      - type: llm-rubric
+        value: "The response should be a number close to 165.3. No surrounding text."
+        provider: "ollama:chat:mistral"
